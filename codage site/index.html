@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Claw Club (GC) - Confidential</title>
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Syne:wght@400;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --espresso: #3E2723;
+            --peony: #F4C9D6;
+            --peony-light: #fbebee;
+            --cream: #FFFDF9;
+            --dark-card: #2B1B17;
+            --gold: #D4AF37;
+            --green: #2ecc71;
+            --red: #e74c3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            background-color: var(--peony-light);
+            color: var(--espresso);
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* SIDEBAR MEMBRES EN DIRECT */
+        .members-sidebar {
+            width: 280px;
+            background-color: var(--dark-card);
+            border-right: 3px solid var(--peony);
+            padding: 25px 15px;
+            display: flex;
+            flex-direction: column;
+            color: var(--peony);
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-family: 'UnifrakturMaguntia', cursive;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-align: center;
+            color: var(--gold);
+        }
+
+        .member-status-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(244, 201, 214, 0.08);
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(244, 201, 214, 0.2);
+            position: relative;
+        }
+
+        .member-mini-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold);
+            object-fit: cover;
+            background-color: var(--peony);
+        }
+
+        .member-info { flex-grow: 1; }
+
+        .member-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.65rem;
+            color: #ccc;
+            margin-top: 2px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot.online {
+            background-color: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: pulse 1.5s infinite;
+        }
+
+        .dot.offline { background-color: var(--red); }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        /* CONTENEUR PRINCIPAL */
+        .main-content-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--cream);
+            min-width: 0;
+            position: relative;
+        }
+
+        /* BANNIÈRE LÉOPARD */
+        .leopard-header {
+            width: 100%;
+            background-color: var(--peony);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill-rule='evenodd'%3E%3Cpath fill='%233e2723' opacity='0.85' d='M25 15c-3 1-8 6-7 11 1 6 7 8 12 7 6-2 9-8 7-13-1-4-7-6-12-5zm75 5c-5 1-9 7-7 12 2 5 8 7 13 5 5-2 7-8 5-13-2-3-7-5-11-4zm-45 35c-6 2-9 8-7 14 2 6 9 8 14 6 6-2 8-9 6-15-2-4-8-6-13-5zm90 10c-4 2-7 7-5 12 2 5 7 7 12 5 5-2 7-7 5-12-2-4-7-6-12-5zm-115 35c-5 2-8 7-6 13 2 5 8 7 13 5 5-2 7-8 5-13-2-4-7-6-12-5zm65 15c-6 1-10 7-8 13 2 6 9 8 14 6 6-2 8-9 6-15-2-4-8-5-12-4zm50 15c-5 2-8 7-6 12 2 5 8 7 12 5 5-2 7-8 5-12-2-4-7-6-11-5z'/%3E%3Cpath fill='%238b4513' opacity='0.6' d='M28 20c-1 2-2 4-1 6 1 2 4 3 6 2 2-1 3-3 2-5-1-2-4-4-7-3zm75 5c-2 1-3 3-2 5 1 2 3 3 5 2 2-1 3-3 2-5-1-1-3-3-5-2zm-45 35c-2 1-3 4-2 6 1 2 4 3 6 2 2-1 3-4 2-6-1-1-4-3-6-2zm90 10c-2 1-3 3-2 5 1 2 3 3 5 2 2-1 3-3 2-5-1-1-3-3-5-2zm-115 35c-2 1-3 3-2 5 1 2 3 3 5 2 2-1 3-3 2-5-1-1-3-3-5-2zm65 15c-2 1-3 4-2 6 1 2 4 3 6 2 2-1 3-4 2-6-1-1-4-3-6-2zm50 15c-2 1-3 3-2 5 1 2 3 3 5 2 2-1 3-3 2-5-1-1-3-3-5-2z'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 140px 140px;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--espresso);
+            position: relative;
+        }
+
+        .club-title {
+            font-family: 'UnifrakturMaguntia', cursive;
+            font-size: 3.8rem;
+            color: var(--peony);
+            text-shadow: 3px 3px 0px var(--espresso), -3px -3px 0px var(--espresso), 3px -3px 0px var(--espresso), -3px 2px 0px var(--espresso);
+            letter-spacing: 2px;
+        }
+
+        .sub-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--cream);
+            margin-top: 8px;
+            font-weight: 700;
+        }
+
+        .admin-top-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--dark-card);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        /* BANDEAU MINI LECTEUR EN FOND */
+        .vibe-bg-player {
+            background: var(--dark-card);
+            color: var(--peony);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        /* NAVBAR CAPSULES */
+        .nav-capsules-bar {
+            width: 100%;
+            background-color: var(--cream);
+            padding: 15px 0;
+            border-bottom: 2px solid rgba(62, 39, 35, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-capsules {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 0 15px;
+            flex-wrap: wrap;
+        }
+
+        .capsule-btn {
+            background-color: var(--cream);
+            border: 2px solid var(--espresso);
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--espresso);
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .capsule-btn.active, .capsule-btn:hover {
+            background-color: var(--espresso);
+            color: var(--peony);
+            transform: translateY(-2px);
+        }
+
+        .capsule-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed !important;
+            transform: none !important;
+            background-color: #eee !important;
+            color: #888 !important;
+        }
+
+        /* BADGE POINT ROUGE */
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--red);
+            border: 2px solid var(--cream);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--red);
+            animation: pulse-red 1.2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        .main-wrapper {
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        /* MODALS */
+        .overlay-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--espresso);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--peony);
+        }
+
+        .modal-card {
+            background-color: var(--dark-card);
+            border: 2px solid var(--peony);
+            border-radius: 22px;
+            padding: 35px 25px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid var(--peony);
+            background: rgba(244, 201, 214, 0.1);
+            color: var(--peony);
+            text-align: center;
+            font-size: 1.1rem;
+            margin: 15px 0 12px;
+            outline: none;
+            text-transform: uppercase;
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 13px;
+            background-color: var(--peony);
+            color: var(--espresso);
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.02);
+            background-color: var(--cream);
+        }
+
+        .modal-btn.secondary {
+            background-color: transparent;
+            border: 2px solid var(--peony);
+            color: var(--peony);
+        }
+
+        /* STUDIO AVATAR */
+        .studio-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--peony);
+            border: 3px solid var(--espresso);
+            border-radius: 22px;
+            padding: 30px;
+            box-shadow: 6px 6px 0px var(--espresso);
+        }
+
+        .avatar-gallery-picker {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 12px;
+            margin: 15px 0 25px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 12px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 16px;
+            border: 2px solid var(--espresso);
+        }
+
+        .gallery-item {
+            width: 100%;
+            height: 100px;
+            border-radius: 12px;
+            border: 2.5px solid var(--espresso);
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            background: #fff;
+        }
+
+        .gallery-item:hover, .gallery-item.selected {
+            transform: scale(1.08);
+            border: 3.5px solid var(--gold);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .studio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        .form-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid var(--espresso);
+            background: var(--cream);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* GRILLE PERMIS VIP */
+        .passes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 25px;
+        }
+
+        .pass-card {
+            background-color: var(--peony);
+            border: 3px solid var(--espresso);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 5px 5px 0px var(--espresso);
+        }
+
+        .pass-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1.5px dashed rgba(62, 39, 35, 0.3);
+        }
+
+        .pass-name-gothic {
+            font-family: 'UnifrakturMaguntia', cursive;
+            font-size: 2rem;
+            color: var(--espresso);
+        }
+
+        .pass-body {
+            display: flex;
+            gap: 15px;
+        }
+
+        .pass-photo-frame {
+            width: 125px;
+            height: 155px;
+            border: 2.5px solid var(--espresso);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background-color: #fff;
+            flex-shrink: 0;
+        }
+
+        .pass-photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .barcode {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            right: 5px;
+            height: 14px;
+            background: repeating-linear-gradient(90deg, #000, #000 2px, #fff 2px, #fff 4px);
+        }
+
+        .pass-details {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 0.72rem;
+        }
+
+        .pass-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+        }
+
+        .mission-score-box {
+            margin-top: 8px;
+            padding: 6px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 8px;
+            border: 1px solid var(--espresso);
+            display: flex;
+            justify-content: space-around;
+            font-size: 0.68rem;
+        }
+
+        /* SECTION MISSION SECRÈTE */
+        .mission-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--peony);
+            border: 3px solid var(--espresso);
+            border-radius: 22px;
+            padding: 30px;
+            box-shadow: 6px 6px 0px var(--espresso);
+        }
+
+        .phase-stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: var(--cream);
+            padding: 12px;
+            border-radius: 15px;
+            border: 2px solid var(--espresso);
+        }
+
+        .step-item {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            opacity: 0.4;
+            padding: 6px 12px;
+            border-radius: 10px;
+        }
+
+        .step-item.active {
+            opacity: 1;
+            background: var(--espresso);
+            color: var(--peony);
+        }
+
+        .card-box {
+            background: var(--cream);
+            border: 2px solid var(--espresso);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .countdown-display {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--espresso);
+            text-align: center;
+            letter-spacing: 2px;
+            background: var(--peony-light);
+            border: 2px dashed var(--espresso);
+            padding: 12px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .member-mission-card {
+            background: var(--peony-light);
+            border: 2px solid var(--espresso);
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .validation-btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-validate {
+            flex: 1;
+            background: var(--green);
+            color: #fff;
+            border: 2px solid var(--espresso);
+            padding: 8px;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        .btn-fail {
+            flex: 1;
+            background: var(--red);
+            color: #fff;
+            border: 2px solid var(--espresso);
+            padding: 8px;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        /* SECTION BLIND TEST GC */
+        .blindtest-card {
+            background: var(--cream);
+            border: 3px solid var(--espresso);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 5px 5px 0px var(--espresso);
+            margin-bottom: 20px;
+        }
+
+        .quote-bubble {
+            background: var(--peony-light);
+            border: 2px dashed var(--espresso);
+            padding: 25px;
+            border-radius: 16px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-style: italic;
+            color: var(--espresso);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .quote-bubble::before {
+            content: "“";
+            font-family: 'UnifrakturMaguntia', cursive;
+            font-size: 4rem;
+            position: absolute;
+            top: -15px;
+            left: 15px;
+            color: var(--peony);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option-choice-btn {
+            background: var(--cream);
+            border: 2px solid var(--espresso);
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--espresso);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .option-choice-btn:hover {
+            background: var(--peony);
+            transform: translateY(-2px);
+        }
+
+        .result-feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .result-feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .result-feedback.wrong {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        /* SECTION TRIBUNAL DU GC */
+        .tribunal-case-card {
+            background: var(--cream);
+            border: 3px solid var(--espresso);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 6px 6px 0px var(--espresso);
+            position: relative;
+        }
+
+        .tribunal-badge {
+            background: var(--espresso);
+            color: var(--gold);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .tribunal-question {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--espresso);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .vote-bar-container {
+            height: 24px;
+            background: #eee;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--espresso);
+            display: flex;
+            margin: 15px 0;
+        }
+
+        .vote-guilty-bar {
+            background: var(--red);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .vote-innocent-bar {
+            background: var(--green);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .comments-section {
+            border-top: 2px dashed rgba(62,39,35,0.2);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .comment-item {
+            background: var(--peony-light);
+            border: 1px solid var(--espresso);
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+
+        /* SECTION MON CŒUR RESTE OUVERT */
+        .hearts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .avatar-heart-card {
+            background: var(--cream);
+            border: 3px solid var(--espresso);
+            border-radius: 18px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 4px 4px 0px var(--espresso);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .avatar-heart-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold);
+        }
+
+        .heart-avatar-img {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            border: 2px solid var(--espresso);
+            object-fit: cover;
+            margin-bottom: 8px;
+            background: var(--peony);
+        }
+
+        .open-heart-note {
+            background: var(--peony-light);
+            border: 2px dashed var(--espresso);
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        /* SECTION MUR DES POTINS & INTERACTIONS */
+        .gossip-post-card {
+            background: var(--cream);
+            border: 2px solid var(--espresso);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 3px 3px 0px var(--espresso);
+            position: relative;
+        }
+
+        .gossip-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #8b4513;
+            margin-bottom: 8px;
+        }
+
+        .gossip-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(62,39,35,0.15);
+        }
+
+        .gossip-btn {
+            background: var(--peony-light);
+            border: 1px solid var(--espresso);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .gossip-comments-box {
+            margin-top: 10px;
+            background: rgba(244, 201, 214, 0.15);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        /* SECTION VIBE ROOM PLAYLIST */
+        .song-item-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--peony-light);
+            border: 2px solid var(--espresso);
+            border-radius: 14px;
+            padding: 12px 18px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .admin-delete-btn {
+            background: var(--red);
+            color: white;
+            border: 1px solid black;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- CODE SECRET -->
+    <div id="lockScreen" class="overlay-screen">
+        <div class="modal-card">
+            <div style="font-family: 'UnifrakturMaguntia', cursive; font-size: 2.6rem; margin-bottom: 10px; color: var(--gold);">The Claw Club</div>
+            <p style="font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;">Entrer le code secret du groupe</p>
+            <input type="password" id="generalPassInput" class="modal-input" placeholder="CODE SECRET">
+            <button onclick="checkGeneralPassword()" class="modal-btn">Accéder au GC</button>
+            <p id="generalError" style="color: #ff6b6b; font-size: 0.75rem; margin-top: 10px; display: none;">Code incorrect !</p>
+        </div>
+    </div>
+
+    <!-- IDENTITÉ -->
+    <div id="identityScreen" class="overlay-screen hidden">
+        <div class="modal-card">
+            <div style="font-family: 'UnifrakturMaguntia', cursive; font-size: 2.3rem; margin-bottom: 10px; color: var(--peony);">Identité Diva</div>
+            <p style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;">Bienvenue au Club Privé</p>
+
+            <div id="optionSelection">
+                <button onclick="showLoginInput()" class="modal-btn">👑 J'ai déjà ma fiche (Se connecter)</button>
+                <button onclick="startNewAvatarCreation()" class="modal-btn secondary">✨ Première fois ? Créer mon Avatar</button>
+            </div>
+
+            <div id="loginForm" class="hidden">
+                <p style="font-size: 0.75rem; text-transform: uppercase; margin-bottom: 5px;">Entre ton pseudo :</p>
+                <input type="text" id="memberNameInput" class="modal-input" placeholder="EX: CHLOÉ">
+                <button onclick="verifyMemberName()" class="modal-btn">Valider mon Entrée</button>
+                <button onclick="showOptionsAgain()" class="modal-btn secondary" style="font-size: 0.75rem; padding: 8px;">← Retour</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LAYOUT SITE -->
+    <div class="app-layout">
+
+        <!-- SIDEBAR (MASQUÉE TANT QUE NON CONNECTÉE) -->
+        <div class="members-sidebar hidden" id="mainSidebar">
+            <div class="sidebar-title">GC en Direct</div>
+            <div id="sidebarMemberList"></div>
+        </div>
+
+        <!-- CONTENU -->
+        <div class="main-content-area">
+
+            <div class="leopard-header">
+                <button onclick="toggleAdminMode()" class="admin-top-btn" id="adminBadge">👑 Mode Admin</button>
+                <div class="club-title">the claw club</div>
+                <div class="sub-title">★ High Ambition Diva Pass ★</div>
+            </div>
+
+            <!-- MINI LECTEUR AUDIO FOND DE SITE (VIBE ROOM) -->
+            <div id="bgPlayerBar" class="vibe-bg-player hidden">
+                <span>🎧 En lecture : <strong id="nowPlayingTitle">-</strong></span>
+                <a id="nowPlayingLink" href="#" target="_blank" style="color: var(--gold); font-weight:800; text-decoration:none;">Lancer le lecteur ➔</a>
+            </div>
+
+            <!-- NAVBAR RESTRUCTURÉE (MASQUÉE TANT QUE NON CONNECTÉE) -->
+            <div class="nav-capsules-bar hidden" id="mainNavbar">
+                <div class="nav-capsules">
+                    <button class="capsule-btn active" id="btnPasses" onclick="switchTab('passes')">VIP Passes</button>
+                    <button class="capsule-btn" id="btnGossip" onclick="switchTab('gossip')">Mur des Potins 💬</button>
+                    <button class="capsule-btn" id="btnBlindTest" onclick="switchTab('blindtest')">Blind Test GC 🎤</button>
+                    <button class="capsule-btn" id="btnMission" onclick="switchTab('mission')">Missions GC 🕵️‍♀️</button>
+                    <button class="capsule-btn" id="btnVibe" onclick="switchTab('vibe')">Vibe Room 🎧</button>
+                    <button class="capsule-btn" id="btnHearts" onclick="switchTab('hearts')">Mon Cœur Ouvert 💖</button>
+                    <button class="capsule-btn" id="btnTribunal" onclick="switchTab('tribunal')">
+                        Tribunal ⚖️
+                        <span id="tribunalDot" class="notification-badge hidden"></span>
+                    </button>
+                    <button class="capsule-btn" id="btnStudio" onclick="switchTab('studio')">Studio Avatar ✨</button>
+                </div>
+            </div>
+
+            <div class="main-wrapper">
+
+                <!-- BANDEAU ADMIN REMISE À ZÉRO -->
+                <div id="adminPanelBanner" class="card-box hidden" style="background: var(--dark-card); color: var(--gold); border: 2px solid var(--gold); margin-bottom: 20px;">
+                    <h3>👑 ACCÈS SPÉCIAL CRÉATRICE (ADMIN)</h3>
+                    <p style="font-size:0.8rem; margin-top:5px;">Tu es connectée en tant qu'administrateur. Des boutons 🗑️ sont apparus pour supprimer facilement les éléments de test.</p>
+                    <button onclick="cleanSiteForLaunch()" class="capsule-btn" style="margin-top:10px; background:var(--red); color:white; border:none;">🧹 Remettre le site à zéro pour le lancement officiel</button>
+                </div>
+
+                <!-- 1. SECTION PERMIS VIP -->
+                <div id="passesSection" class="hidden">
+                    <div style="font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 25px;">
+                        Fiches & Permis du Groupe
+                    </div>
+                    <div id="passesGrid" class="passes-grid"></div>
+                </div>
+
+                <!-- 2. SECTION MUR DES POTINS -->
+                <div id="gossipSection" class="hidden">
+                    <div class="studio-container">
+                        <div style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; text-transform: uppercase; text-align: center; margin-bottom: 5px;">
+                            💬 Le Mur des Potins & Remerciements
+                        </div>
+                        <p style="text-align: center; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 20px;">Laisse une private joke, un potin du jour ou un petit mot pour le groupe !</p>
+
+                        <div class="card-box" style="margin-bottom: 20px;">
+                            <textarea id="gossipInput" class="form-control" rows="3" placeholder="Écris ton potin ou ton mot doux..." style="margin-bottom: 10px; resize: none;"></textarea>
+                            <button onclick="postGossip()" class="capsule-btn" style="width: 100%; background: var(--espresso); color: var(--peony);">Publier sur le Mur ✍️</button>
+                        </div>
+
+                        <div id="gossipWallFeed"></div>
+                    </div>
+                </div>
+
+                <!-- 3. SECTION BLIND TEST GC -->
+                <div id="blindtestSection" class="hidden">
+                    <div class="studio-container">
+                        <div style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; text-transform: uppercase; text-align: center; margin-bottom: 5px;">
+                            🎤 Blind Test GC — Qui a dit ça ?
+                        </div>
+                        <p style="text-align: center; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 20px;">Retrouve l'auteure de ces répliques et pépites mythiques du groupe !</p>
+
+                        <!-- CARTE DU QUIZ -->
+                        <div class="blindtest-card" id="quizBox">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: #8b4513;">
+                                <span id="questionProgress">Question 1/5</span>
+                                <span>Gossip Score : <strong id="currentScoreDisplay" style="color: var(--espresso);">0</strong> pts</span>
+                            </div>
+
+                            <div class="quote-bubble" id="quoteTextDisplay">
+                                "Chargement de la phrase..."
+                            </div>
+
+                            <p style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;">Qui a balancé cette phrase ?</p>
+                            <div class="options-grid" id="optionsGridContainer"></div>
+
+                            <div id="feedbackBox" class="result-feedback hidden"></div>
+
+                            <button id="nextQuestionBtn" onclick="nextQuestion()" class="capsule-btn hidden" style="margin-top: 15px; width: 100%; background: var(--espresso); color: var(--peony);">Question Suivante ➔</button>
+                        </div>
+
+                        <!-- ÉCRAN DE FIN DU QUIZ -->
+                        <div class="blindtest-card hidden" id="quizEndBox">
+                            <div style="font-family: 'UnifrakturMaguntia', cursive; font-size: 2.8rem; color: var(--gold); margin-bottom: 10px;">Résultats du Blind Test</div>
+                            <p style="font-size: 1rem; font-weight: 800; text-transform: uppercase; margin-bottom: 15px;">Ton Score Final : <span id="finalScoreDisplay" style="color: var(--espresso);">0</span> / <span id="maxScoreDisplay">5</span></p>
+                            <p id="finalFeedbackMsg" style="font-size: 0.85rem; margin-bottom: 20px; font-style: italic;"></p>
+                            <button onclick="restartQuiz()" class="capsule-btn" style="padding: 12px 25px; background: var(--espresso); color: var(--peony);">Rejouer le Quiz 🔄</button>
+                        </div>
+
+                        <!-- SOUMISSION DE NOUVELLES PÉPITES ANONYMES -->
+                        <div class="card-box" style="margin-top: 25px;">
+                            <h3 style="text-transform: uppercase; font-size: 0.95rem; margin-bottom: 8px;">🤫 Proposer une nouvelle pépite du GC</h3>
+                            <p style="font-size: 0.75rem; margin-bottom: 12px;">Tu as un screen ou un souvenir d'une réplique mythique ? Propose-la anonymement pour alimenter le Blind Test !</p>
+                            <input type="text" id="newQuoteInput" class="form-control" placeholder="Phrase culte..." style="margin-bottom: 8px;">
+                            <input type="text" id="newAuthorInput" class="form-control" placeholder="Qui l'a dite ? (Prénom)" style="margin-bottom: 10px;">
+                            <button onclick="submitNewQuote()" class="capsule-btn" style="width: 100%; background: var(--espresso); color: var(--peony);">Envoyer l'archive 📂</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. SECTION MISSIONS DU GC -->
+                <div id="missionSection" class="hidden">
+                    <div class="mission-container">
+                        <div style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; text-transform: uppercase; text-align: center; margin-bottom: 15px;">
+                            🕵️‍♀️ Missions Hebdo du GC
+                        </div>
+
+                        <!-- FRISE DES ÉTAPES -->
+                        <div class="phase-stepper">
+                            <div class="step-item" id="step1">1. Lundi (Banque de Défis)</div>
+                            <div class="step-item" id="step2">2. Mardi (Tirage au Sort)</div>
+                            <div class="step-item" id="step3">3. Merc-Dim (Missions & Preuves)</div>
+                        </div>
+
+                        <!-- PHASE 1 : LUNDI -->
+                        <div id="phase1Box" class="card-box hidden">
+                            <h3 style="text-transform: uppercase; font-size: 1rem; margin-bottom: 10px;">Proposer des Défis Anonymes (Lundi)</h3>
+                            <p style="font-size: 0.8rem; margin-bottom: 15px;">Tu peux proposer autant de missions secrètes que tu veux pour le groupe ! C'est 100% anonyme.</p>
+                            
+                            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                <input type="text" id="missionInput" class="form-control" placeholder="Ex: Faire une commande au drive en chantant...">
+                                <button onclick="submitMissionProposal()" class="capsule-btn" style="background: var(--espresso); color: var(--peony); flex-shrink: 0;">Ajouter 🤫</button>
+                            </div>
+
+                            <div style="border-top: 1.5px dashed rgba(62,39,35,0.2); padding-top: 15px;">
+                                <p style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; margin-bottom: 10px;">Défis enregistrés dans la banque (<span id="totalProposalsCount">0</span>) :</p>
+                                <div id="proposalsListDisplay" style="max-height: 180px; overflow-y: auto; text-align: left; font-size: 0.85rem; font-style: italic;"></div>
+                            </div>
+                        </div>
+
+                        <!-- PHASE 2 : MARDI -->
+                        <div id="phase2Box" class="card-box hidden" style="text-align: center;">
+                            <h3 style="text-transform: uppercase; font-size: 1.1rem; margin-bottom: 10px;">Grand Tirage au Sort du Mardi 🎲</h3>
+                            <p style="font-size: 0.85rem; margin-bottom: 20px;">Le système va attribuer aléatoirement une mission secrète de la banque à chacune des membres du GC !</p>
+                            <button onclick="launchRandomDistribution()" class="capsule-btn" style="padding: 12px 25px; font-size: 0.9rem; background: var(--espresso); color: var(--gold);">Lancer la Distribution des Missions 🎰</button>
+                        </div>
+
+                        <!-- PHASE 3 : MERCREDI À DIMANCHE -->
+                        <div id="phase3Box" class="card-box hidden">
+                            <!-- COMPTE À REBOURS GÉANT -->
+                            <div class="countdown-display">
+                                <div style="font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #8b4513; margin-bottom: 4px;">⌛ Fin des missions dans :</div>
+                                <div id="countdownTimer">00d 00h 00m 00s</div>
+                            </div>
+
+                            <h3 style="text-transform: uppercase; font-size: 1.1rem; margin-bottom: 5px; text-align: center;">Missions Actives & Galerie des Preuves 🎯</h3>
+                            <p style="font-size: 0.8rem; text-align: center; margin-bottom: 20px;">Chaque membre a sa mission ! Téléverse ta preuve ci-dessous et vote pour celles des autres :</p>
+
+                            <div id="allMembersMissionsList"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 5. SECTION VIBE ROOM PLAYLIST -->
+                <div id="vibeSection" class="hidden">
+                    <div class="studio-container">
+                        <div style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; text-transform: uppercase; text-align: center; margin-bottom: 5px;">
+                            🎧 Vibe Room — Hymnes du GC
+                        </div>
+                        <p style="text-align: center; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 20px;">Les sons et playlists (Spotify, Apple Music, YouTube...) qui nous rappellent nos meilleures soirées !</p>
+
+                        <div class="card-box" style="margin-bottom: 20px;">
+                            <h3 style="text-transform: uppercase; font-size: 0.9rem; margin-bottom: 8px;">➕ Proposer un son / une playlist</h3>
+                            <input type="text" id="songTitleInput" class="form-control" placeholder="Titre & Artiste..." style="margin-bottom: 8px;">
+                            <input type="url" id="songUrlInput" class="form-control" placeholder="Lien Spotify, Apple Music, YouTube... (Optionnel)" style="margin-bottom: 8px;">
+                            <button onclick="addSongToPlaylist()" class="capsule-btn" style="width: 100%; background: var(--espresso); color: var(--peony);">Ajouter à la Playlist 🎵</button>
+                        </div>
+
+                        <div id="playlistContainer"></div>
+                    </div>
+                </div>
+
+                <!-- 6. SECTION MON CŒUR RESTE OUVERT -->
+                <div id="heartsSection" class="hidden">
+                    <div class="studio-container">
+                        <div style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; text-transform: uppercase; text-align: center; margin-bottom: 5px;">
+                            💖 Mon Cœur Reste Ouvert
+                        </div>
+                        <p style="text-align: center; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 25px;">Dis anonymement ce que tu penses à une fille du groupe. Si elle refuse ton commentaire, direction le Tribunal !</p>
+
+                        <!-- GRILLE DES AVATARS -->
+                        <div id="heartsGridContainer" class="hearts-grid"></div>
+
+                        <!-- ZONE DES COMMENTAIRES REÇUS PAR L'UTILISATRICE CONNECTÉE -->
+                        <div class="card-box" style="margin-top: 25px;">
+                            <h3 style="text-transform: uppercase; font-size: 1rem; margin-bottom: 10px; color: var(--espresso);">💌 Mes Pensées Reçues (<span id="activeUserHeartName">Toi</span>)</h3>
+                            <div id="myReceivedHeartNotes"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. SECTION TRIBUNAL DU GC -->
+                <div id="tribunalSection" class="hidden">
+                    <div class="studio-container">
+                        <div style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; text-transform: uppercase; text-align: center; margin-bottom: 5px;">
+                            ⚖️ Tribunal du GC — Court of Divas
+                        </div>
+                        <p style="text-align: center; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 25px;">Pose tes dilemmes en secret et laisse le jury trancher !</p>
+
+                        <!-- BOÎTE À JUGER (SOUMISSION D'AFFAIRES) -->
+                        <div class="card-box" style="margin-bottom: 25px;">
+                            <h3 style="text-transform: uppercase; font-size: 1rem; margin-bottom: 8px;">📥 La Boîte à Juger (Anonyme)</h3>
+                            <p style="font-size: 0.78rem; margin-bottom: 12px;">Dépose une situation ou un aveu secrètement pour lancer un procès du groupe :</p>
+                            <textarea id="tribunalQuestionInput" class="form-control" rows="3" placeholder="Ex: Suis-je coupable de vouloir tromper mon copain ?..." style="margin-bottom: 12px; resize: none;"></textarea>
+                            <button onclick="submitTribunalCase()" class="capsule-btn" style="width: 100%; background: var(--espresso); color: var(--peony);">Envoyer au Procès 👨‍⚖️</button>
+                        </div>
+
+                        <!-- LISTE DES PROCÈS EN COURS -->
+                        <div id="tribunalCasesList"></div>
+                    </div>
+                </div>
+
+                <!-- 8. SECTION STUDIO AVATAR (PAR DÉFAUT POUR TOUT NOUVEAU MEMBRE) -->
+                <div id="studioSection">
+                    <div class="studio-container">
+                        <div style="font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; text-align: center; margin-bottom: 10px;">
+                            Studio Avatar Everskies
+                        </div>
+                        <p style="text-align: center; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; color: var(--espresso); font-weight:700;">✨ ÉTAPE OBLIGATOIRE : Crée ta fiche pour débloquer l'accès au site !</p>
+                        
+                        <div id="galleryContainer" class="avatar-gallery-picker"></div>
+
+                        <div class="studio-grid">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Ton Pseudo :</label>
+                                    <input type="text" id="studioName" class="form-control" placeholder="Ex: Chloé">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Ton Âge :</label>
+                                    <input type="text" id="studioAge" class="form-control" placeholder="Ex: 24 ans">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Date d'anniversaire :</label>
+                                    <input type="text" id="studioBirthday" class="form-control" placeholder="Ex: 18 Avril">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Signe Astrologique :</label>
+                                    <input type="text" id="studioZodiac" class="form-control" placeholder="Ex: Balance ♎">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Statut Femme Fatale :</label>
+                                    <input type="text" id="studioStatus" class="form-control" placeholder="Ex: Savage Fatale">
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="saveMemberProfile()" class="modal-btn" style="margin-top: 15px;">Enregistrer mon Permis VIP 🐆</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var isAdmin = false;
+        var userLoggedIn = false;
+
+        var avatarList = [];
+        for(var i = 1; i <= 19; i++) {
+            avatarList.push('img' + i + '.jpg');
+        }
+
+        var selectedAvatarPath = avatarList[0];
+
+        var membersData = JSON.parse(localStorage.getItem('clawClubMembers')) || [];
+
+        var currentActiveUser = "";
+
+        // DONNÉES MUR DES POTINS
+        var gossipWall = JSON.parse(localStorage.getItem('clawClubGossip')) || [];
+
+        // DONNÉES VIBE ROOM PLAYLIST
+        var playlistSongs = JSON.parse(localStorage.getItem('clawClubPlaylist')) || [];
+
+        // DONNÉES MON CŒUR RESTE OUVERT
+        var openHeartNotes = JSON.parse(localStorage.getItem('clawClubHeartNotes')) || [];
+
+        // DONNÉES BLIND TEST GC
+        var blindTestQuotes = JSON.parse(localStorage.getItem('clawClubQuotes')) || [
+            { text: "Pour le pain et l’eau", author: "Ange", choices: ["Ange", "Chloé", "Sara", "Noure"] },
+            { text: "Les narines de Diami", author: "Ramée", choices: ["Ramée", "Edwige", "Kelly", "Ange"] },
+            { text: "Ok mais c’est quoi du bangala", author: "Noure", choices: ["Noure", "Sara", "Chloé", "Ramée"] },
+            { text: "j'viens de prendre une boisson protéinée je sens déjà mes fesses grossirent", author: "Kelly", choices: ["Kelly", "Ange", "Edwige", "Noure"] },
+            { text: "PTDRRR RAMÉE un jour je vais serrer ton coup toi", author: "Edwige", choices: ["Edwige", "Ramée", "Sara", "Kelly"] }
+        ];
+
+        var currentQuestionIdx = 0;
+        var userScore = 0;
+        var questionAnswered = false;
+
+        // DONNÉES TRIBUNAL DU GC
+        var tribunalCases = JSON.parse(localStorage.getItem('clawClubTribunal')) || [];
+
+        var hasUnreadTribunal = JSON.parse(localStorage.getItem('clawClubTribunalUnread')) || false;
+
+        var rawMissions = localStorage.getItem('clawClubMissions');
+        var missionState = { currentPhase: 1, proposalsBank: [], assignments: {} };
+        if (rawMissions) {
+            try {
+                var parsed = JSON.parse(rawMissions);
+                if (parsed) {
+                    missionState.currentPhase = parsed.currentPhase || 1;
+                    missionState.proposalsBank = Array.isArray(parsed.proposalsBank) ? parsed.proposalsBank : [];
+                    missionState.assignments = parsed.assignments || {};
+                }
+            } catch(e) {}
+        }
+
+        function autoSetMissionPhaseByDay() {
+            var dayOfWeek = new Date().getDay();
+            if(dayOfWeek === 1) {
+                missionState.currentPhase = 1;
+            } else if(dayOfWeek === 2) {
+                missionState.currentPhase = 2;
+            } else {
+                missionState.currentPhase = 3;
+            }
+        }
+
+        function toggleAdminMode() {
+            if(!isAdmin) {
+                var pass = prompt("Entrez le mot de passe Administrateur / Créatrice :");
+                if(pass === "ADMIN2024") {
+                    isAdmin = true;
+                    alert("Mode Créatrice activé ! You have admin rights 👑");
+                    document.getElementById('adminBadge').innerText = "👑 Admin Activé";
+                    document.getElementById('adminPanelBanner').classList.remove('hidden');
+                } else {
+                    alert("Mot de passe incorrect !");
+                }
+            } else {
+                isAdmin = false;
+                alert("Mode Créatrice désactivé.");
+                document.getElementById('adminBadge').innerText = "👑 Mode Admin";
+                document.getElementById('adminPanelBanner').classList.add('hidden');
+            }
+            saveAndRefresh();
+        }
+
+        function cleanSiteForLaunch() {
+            if(!confirm("Es-tu sûre de vouloir réinitialiser tout le contenu pour le lancement officiel ?")) return;
+
+            membersData = [];
+            gossipWall = [];
+            playlistSongs = [];
+            openHeartNotes = [];
+            tribunalCases = [];
+            missionState = { currentPhase: 1, proposalsBank: [], assignments: {} };
+
+            saveAndRefresh();
+            alert("Site remis à zéro avec succès ! Prêt pour le lancement ! 🎉");
+        }
+
+        function updateTimer() {
+            var now = new Date();
+            var nextSunday = new Date();
+            var dayOfWeek = now.getDay(); 
+            var daysUntilSunday = (7 - dayOfWeek) % 7;
+            
+            nextSunday.setDate(now.getDate() + daysUntilSunday);
+            nextSunday.setHours(23, 59, 59, 999);
+
+            var diff = nextSunday - now;
+            if(diff < 0) diff = 0;
+
+            var d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            var h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var s = Math.floor((diff % (1000 * 60)) / 1000);
+
+            var timerEl = document.getElementById('countdownTimer');
+            if(timerEl) {
+                timerEl.innerText = (d < 10 ? '0' + d : d) + "d " + 
+                                    (h < 10 ? '0' + h : h) + "h " + 
+                                    (m < 10 ? '0' + m : m) + "m " + 
+                                    (s < 10 ? '0' + s : s) + "s";
+            }
+        }
+        setInterval(updateTimer, 1000);
+
+        function checkNotificationBadges() {
+            var dot = document.getElementById('tribunalDot');
+            if(dot) {
+                if(hasUnreadTribunal) dot.classList.remove('hidden');
+                else dot.classList.add('hidden');
+            }
+        }
+
+        function buildGallery() {
+            var container = document.getElementById('galleryContainer');
+            if(!container) return;
+            container.innerHTML = "";
+            for(var idx = 0; idx < avatarList.length; idx++) {
+                var url = avatarList[idx];
+                var isSel = (idx === 0) ? 'selected' : '';
+                container.innerHTML += '<img src="' + url + '" class="gallery-item ' + isSel + '" onclick="selectAvatar(\'' + url + '\', this)" alt="Avatar">';
+            }
+        }
+
+        function checkGeneralPassword() {
+            var pass = document.getElementById('generalPassInput').value.trim();
+            if(pass.toUpperCase() === 'GC2024' || pass === '') {
+                document.getElementById('lockScreen').classList.add('hidden');
+                document.getElementById('identityScreen').classList.remove('hidden');
+            } else {
+                document.getElementById('generalError').style.display = 'block';
+            }
+        }
+
+        function showLoginInput() {
+            document.getElementById('optionSelection').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        function showOptionsAgain() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('optionSelection').classList.remove('hidden');
+        }
+
+        function startNewAvatarCreation() {
+            document.getElementById('identityScreen').classList.add('hidden');
+            // L'utilisateur reste bloqué dans le studio
+            switchTab('studio');
+        }
+
+        function unlockSiteNavigation() {
+            userLoggedIn = true;
+            document.getElementById('mainNavbar').classList.remove('hidden');
+            document.getElementById('mainSidebar').classList.remove('hidden');
+        }
+
+        function verifyMemberName() {
+            var nameInput = document.getElementById('memberNameInput').value.trim();
+            if(!nameInput) return alert("Entre ton pseudo !");
+
+            currentActiveUser = nameInput.charAt(0).toUpperCase() + nameInput.slice(1).toLowerCase();
+            
+            var found = false;
+            for(var j = 0; j < membersData.length; j++) {
+                if(membersData[j].name.toLowerCase() === currentActiveUser.toLowerCase()) {
+                    membersData[j].online = true;
+                    found = true;
+                    break;
+                }
+            }
+
+            if(found) {
+                unlockSiteNavigation();
+                saveAndRefresh();
+                document.getElementById('identityScreen').classList.add('hidden');
+                switchTab('passes');
+            } else {
+                alert("Aucun profil trouvé ! Choisis 'Créer mon Avatar' pour lancer ta fiche.");
+            }
+        }
+
+        function saveAndRefresh() {
+            localStorage.setItem('clawClubMembers', JSON.stringify(membersData));
+            localStorage.setItem('clawClubMissions', JSON.stringify(missionState));
+            localStorage.setItem('clawClubQuotes', JSON.stringify(blindTestQuotes));
+            localStorage.setItem('clawClubTribunal', JSON.stringify(tribunalCases));
+            localStorage.setItem('clawClubTribunalUnread', JSON.stringify(hasUnreadTribunal));
+            localStorage.setItem('clawClubHeartNotes', JSON.stringify(openHeartNotes));
+            localStorage.setItem('clawClubGossip', JSON.stringify(gossipWall));
+            localStorage.setItem('clawClubPlaylist', JSON.stringify(playlistSongs));
+            renderSidebar();
+            renderPasses();
+            renderMissionUI();
+            renderGossipWall();
+            renderPlaylist();
+            renderTribunalCases();
+            checkNotificationBadges();
+        }
+
+        function renderSidebar() {
+            var list = document.getElementById('sidebarMemberList');
+            if(!list) return;
+            list.innerHTML = "";
+            for(var k = 0; k < membersData.length; k++) {
+                var m = membersData[k];
+                var dotClass = m.online ? 'online' : 'offline';
+                var statusTxt = m.online ? 'En ligne' : 'Hors ligne';
+                
+                var deleteBtn = isAdmin ? '<button class="admin-delete-btn" onclick="adminDeleteMember(' + k + ')">🗑️</button>' : '';
+
+                list.innerHTML += '<div class="member-status-item">' +
+                    '<img src="' + m.avatar + '" class="member-mini-avatar" alt="Avatar">' +
+                    '<div class="member-info">' +
+                        '<div class="member-name">' + m.name + '</div>' +
+                        '<div class="status-indicator"><span class="dot ' + dotClass + '"></span>' + statusTxt + '</div>' +
+                    '</div>' + deleteBtn +
+                '</div>';
+            }
+        }
+
+        function adminDeleteMember(idx) {
+            if(confirm("Supprimer ce membre ?")) {
+                membersData.splice(idx, 1);
+                saveAndRefresh();
+            }
+        }
+
+        function renderPasses() {
+            var grid = document.getElementById('passesGrid');
+            if(!grid) return;
+            grid.innerHTML = "";
+
+            if(membersData.length === 0) {
+                grid.innerHTML = "<p style='grid-column:1/-1; text-align:center;'>Aucun membre enregistré.</p>";
+                return;
+            }
+
+            for(var l = 0; l < membersData.length; l++) {
+                var m = membersData[l];
+                var wins = m.wins || 0;
+                var fails = m.fails || 0;
+                var badgeTxt = (fails > wins) ? "⚠️ HORS LA LOI" : "🏆 AGENT VALIDÉE";
+
+                grid.innerHTML += '<div class="pass-card">' +
+                    '<div class="pass-header">' +
+                        '<span style="font-size: 0.65rem; font-weight: 800; letter-spacing: 1px;">' + badgeTxt + '</span>' +
+                        '<span class="pass-name-gothic">' + m.name + '</span>' +
+                    '</div>' +
+                    '<div class="pass-body">' +
+                        '<div class="pass-photo-frame">' +
+                            '<img src="' + m.avatar + '" alt="Avatar">' +
+                            '<div class="barcode"></div>' +
+                        '</div>' +
+                        '<div class="pass-details">' +
+                            '<div><span style="color: rgba(62,39,35,0.6); font-size: 0.55rem;">Statut</span><br><strong>' + m.status + '</strong></div>' +
+                            '<div class="pass-row">' +
+                                '<div><span style="color: rgba(62,39,35,0.6); font-size: 0.55rem;">Anniversaire</span><br><strong>' + m.birthday + '</strong></div>' +
+                                '<div><span style="color: rgba(62,39,35,0.6); font-size: 0.55rem;">Âge</span><br><strong>' + m.age + '</strong></div>' +
+                            '</div>' +
+                            '<div><span style="color: rgba(62,39,35,0.6); font-size: 0.55rem;">Signe Astro</span><br><strong>' + m.zodiac + '</strong></div>' +
+                            '<div class="mission-score-box">' +
+                                '<span>🎯 Réussites: <strong>' + wins + '</strong></span>' +
+                                '<span>❌ Échecs: <strong>' + fails + '</strong></span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }
+        }
+
+        /* FONCTIONS MUR DES POTINS */
+        function renderGossipWall() {
+            var feed = document.getElementById('gossipWallFeed');
+            if(!feed) return;
+            feed.innerHTML = "";
+
+            if(gossipWall.length === 0) {
+                feed.innerHTML = "<p style='text-align:center; font-size:0.85rem; color:#888;'>Le mur est vide ! Sois la première à laisser un mot 💬.</p>";
+                return;
+            }
+
+            for(var i = 0; i < gossipWall.length; i++) {
+                var item = gossipWall[i];
+                var likes = item.likes || 0;
+                var dislikes = item.dislikes || 0;
+                var comments = item.comments || [];
+
+                var cmtsHTML = "";
+                for(var c = 0; c < comments.length; c++) {
+                    cmtsHTML += '<div style="font-size:0.75rem; margin-top:4px;"><strong>' + comments[c].author + ' :</strong> ' + comments[c].text + '</div>';
+                }
+
+                var adminDelBtn = isAdmin ? '<button class="admin-delete-btn" onclick="adminDeleteGossip(' + i + ')">🗑️</button>' : '';
+
+                feed.innerHTML += '<div class="gossip-post-card">' +
+                    '<div class="gossip-header">' +
+                        '<span>👑 ' + item.author + ' ' + adminDelBtn + '</span>' +
+                        '<span>' + item.date + '</span>' +
+                    '</div>' +
+                    '<div style="font-size:0.9rem; font-weight:600;">"' + item.text + '"</div>' +
+                    
+                    '<div class="gossip-actions">' +
+                        '<button class="gossip-btn" onclick="likeGossip(' + i + ', \'like\')">❤️ ' + likes + '</button>' +
+                        '<button class="gossip-btn" onclick="likeGossip(' + i + ', \'dislike\')">💔 ' + dislikes + '</button>' +
+                    '</div>' +
+
+                    '<div class="gossip-comments-box">' +
+                        (cmtsHTML || '<div style="font-size:0.7rem; color:#888; font-style:italic;">Aucun commentaire.</div>') +
+                        '<div style="display:flex; gap:6px; margin-top:8px;">' +
+                            '<input type="text" id="gossipCmt_' + i + '" maxlength="50" class="form-control" placeholder="Commenter (max 50 caractères)..." style="font-size:0.75rem;">' +
+                            '<button onclick="addGossipComment(' + i + ')" class="capsule-btn" style="padding:4px 10px; font-size:0.65rem; background:var(--espresso); color:var(--peony);">Poster</button>' +
+                        '</div>' +
+                    '</div>' +
+
+                '</div>';
+            }
+        }
+
+        function adminDeleteGossip(idx) {
+            if(confirm("Supprimer ce potin ?")) {
+                gossipWall.splice(idx, 1);
+                saveAndRefresh();
+            }
+        }
+
+        function postGossip() {
+            var txt = document.getElementById('gossipInput').value.trim();
+            if(!txt) return alert("Écris ton mot !");
+
+            var authorName = currentActiveUser || "Diva Anonyme";
+            var now = new Date();
+            var dateStr = now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+            gossipWall.unshift({ author: authorName, text: txt, date: dateStr, likes: 0, dislikes: 0, comments: [] });
+            document.getElementById('gossipInput').value = "";
+            saveAndRefresh();
+        }
+
+        function likeGossip(idx, type) {
+            if(type === 'like') gossipWall[idx].likes = (gossipWall[idx].likes || 0) + 1;
+            else gossipWall[idx].dislikes = (gossipWall[idx].dislikes || 0) + 1;
+            saveAndRefresh();
+        }
+
+        function addGossipComment(idx) {
+            var input = document.getElementById('gossipCmt_' + idx);
+            if(!input) return;
+            var txt = input.value.trim();
+            if(!txt) return;
+
+            var authorName = currentActiveUser || "Diva";
+            if(!gossipWall[idx].comments) gossipWall[idx].comments = [];
+            
+            gossipWall[idx].comments.push({ author: authorName, text: txt.substring(0, 50) });
+            input.value = "";
+            saveAndRefresh();
+        }
+
+        /* FONCTIONS VIBE ROOM PLAYLIST */
+        function renderPlaylist() {
+            var container = document.getElementById('playlistContainer');
+            if(!container) return;
+            container.innerHTML = "";
+
+            if(playlistSongs.length === 0) {
+                container.innerHTML = "<p style='text-align:center; font-size:0.85rem; color:#888;'>Aucune musique partagée pour le moment !</p>";
+                return;
+            }
+
+            for(var i = 0; i < playlistSongs.length; i++) {
+                var s = playlistSongs[i];
+                var adminDelBtn = isAdmin ? '<button class="admin-delete-btn" onclick="adminDeleteSong(' + i + ')">🗑️</button>' : '';
+                
+                var listenBtnHTML = "";
+                if(s.url) {
+                    listenBtnHTML = '<button onclick="playBgMusic(\'' + escapeHtml(s.title) + '\', \'' + s.url + '\')" class="capsule-btn" style="font-size:0.65rem; padding:4px 10px; background:var(--gold); color:var(--dark-card);">▶ Écouter en fond</button>';
+                }
+
+                container.innerHTML += '<div class="song-item-card">' +
+                    '<div>' +
+                        '<strong style="font-size:0.9rem;">🎵 ' + s.title + '</strong> ' + adminDelBtn + '<br>' +
+                        '<span style="font-size:0.7rem; color:#8b4513;">Ajouté par : ' + s.addedBy + '</span>' +
+                    '</div>' +
+                    listenBtnHTML +
+                '</div>';
+            }
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/'/g, "\\'");
+        }
+
+        function playBgMusic(title, url) {
+            document.getElementById('bgPlayerBar').classList.remove('hidden');
+            document.getElementById('nowPlayingTitle').innerText = title;
+            var linkEl = document.getElementById('nowPlayingLink');
+            linkEl.href = url;
+        }
+
+        function adminDeleteSong(idx) {
+            if(confirm("Supprimer cette chanson ?")) {
+                playlistSongs.splice(idx, 1);
+                saveAndRefresh();
+            }
+        }
+
+        function addSongToPlaylist() {
+            var title = document.getElementById('songTitleInput').value.trim();
+            var url = document.getElementById('songUrlInput').value.trim();
+
+            if(!title) return alert("Remplis au moins le titre de la chanson !");
+
+            var authorName = currentActiveUser || "Diva";
+            playlistSongs.push({ title: title, url: url, addedBy: authorName });
+            document.getElementById('songTitleInput').value = "";
+            document.getElementById('songUrlInput').value = "";
+            saveAndRefresh();
+            alert("Chanson ajoutée à la Vibe Room ! 🎉");
+        }
+
+        /* FONCTIONS MON CŒUR RESTE OUVERT */
+        function renderHeartsUI() {
+            var grid = document.getElementById('heartsGridContainer');
+            if(!grid) return;
+            grid.innerHTML = "";
+
+            for(var i = 0; i < membersData.length; i++) {
+                var m = membersData[i];
+                grid.innerHTML += '<div class="avatar-heart-card" onclick="openHeartModal(\'' + m.name + '\')">' +
+                    '<img src="' + m.avatar + '" class="heart-avatar-img" alt="Avatar">' +
+                    '<div style="font-weight:800; text-transform:uppercase; font-size:0.9rem;">' + m.name + '</div>' +
+                    '<div style="font-size:0.7rem; color:#8b4513; margin-top:4px;">💌 Dire une pensée secrète</div>' +
+                '</div>';
+            }
+
+            renderMyReceivedHeartNotes();
+        }
+
+        function openHeartModal(targetName) {
+            var text = prompt("Écris ta pensée / réflexion anonyme pour " + targetName + " :");
+            if(text && text.trim() !== "") {
+                openHeartNotes.push({
+                    id: Date.now(),
+                    targetName: targetName,
+                    text: text.trim(),
+                    status: "pending"
+                });
+                saveAndRefresh();
+                renderHeartsUI();
+                alert("Pensée envoyée de façon 100% anonyme à " + targetName + " !");
+            }
+        }
+
+        function renderMyReceivedHeartNotes() {
+            var container = document.getElementById('myReceivedHeartNotes');
+            var activeNameSpan = document.getElementById('activeUserHeartName');
+            if(!container) return;
+
+            activeNameSpan.innerText = currentActiveUser || "Connecte-toi";
+            container.innerHTML = "";
+
+            if(!currentActiveUser) {
+                container.innerHTML = "<p style='font-size:0.8rem; font-style:italic;'>Connecte-toi avec ton pseudo pour lire les pensées qu'on t'a laissées.</p>";
+                return;
+            }
+
+            var myNotes = [];
+            for(var i = 0; i < openHeartNotes.length; i++) {
+                if(openHeartNotes[i].targetName.toLowerCase() === currentActiveUser.toLowerCase() && openHeartNotes[i].status === "pending") {
+                    myNotes.push(openHeartNotes[i]);
+                }
+            }
+
+            if(myNotes.length === 0) {
+                container.innerHTML = "<p style='font-size:0.8rem; font-style:italic; color:#777;'>Aucune pensée en attente pour toi pour l'instant ! ✨</p>";
+                return;
+            }
+
+            for(var j = 0; j < myNotes.length; j++) {
+                var note = myNotes[j];
+                container.innerHTML += '<div class="open-heart-note">' +
+                    '<div style="font-weight:700; margin-bottom:8px;">" ' + note.text + ' "</div>' +
+                    '<div class="validation-btn-group">' +
+                        '<button class="btn-validate" onclick="handleHeartChoice(' + note.id + ', \'accept\')">🟢 J\'accepte 🤍</button>' +
+                        '<button class="btn-fail" onclick="handleHeartChoice(' + note.id + ', \'tribunal\')">⚖️ Rediriger au Tribunal</button>' +
+                    '</div>' +
+                '</div>';
+            }
+        }
+
+        function handleHeartChoice(noteId, choice) {
+            for(var i = 0; i < openHeartNotes.length; i++) {
+                if(openHeartNotes[i].id === noteId) {
+                    var note = openHeartNotes[i];
+
+                    if(choice === 'accept') {
+                        note.status = "accepted";
+                        alert("Pensée acceptée ! On passe au suivant. 💖");
+                    } else if(choice === 'tribunal') {
+                        note.status = "rejected";
+                        
+                        var tribunalQuestion = "Affaire portée par " + note.targetName + " : Ce commentaire anonyme est-il acceptable ? » \"" + note.text + "\"";
+                        
+                        tribunalCases.unshift({
+                            id: Date.now(),
+                            question: tribunalQuestion,
+                            guiltyVotes: 0,
+                            innocentVotes: 0,
+                            voters: [],
+                            comments: []
+                        });
+
+                        hasUnreadTribunal = true;
+                        alert("Procès ouvert ! L'affaire a été automatiquement transférée au Tribunal du GC. ⚖️");
+                    }
+                    break;
+                }
+            }
+
+            saveAndRefresh();
+            renderHeartsUI();
+        }
+
+        /* FONCTIONS TRIBUNAL DU GC */
+        function submitTribunalCase() {
+            var txt = document.getElementById('tribunalQuestionInput').value.trim();
+            if(!txt) return alert("Écris la situation ou ton dilemme !");
+
+            var newCase = {
+                id: Date.now(),
+                question: txt,
+                guiltyVotes: 0,
+                innocentVotes: 0,
+                voters: [],
+                comments: []
+            };
+
+            tribunalCases.unshift(newCase);
+            document.getElementById('tribunalQuestionInput').value = "";
+            hasUnreadTribunal = true;
+            saveAndRefresh();
+            renderTribunalCases();
+            alert("Affaire transmise au Tribunal du GC !");
+        }
+
+        function renderTribunalCases() {
+            var list = document.getElementById('tribunalCasesList');
+            if(!list) return;
+            list.innerHTML = "";
+
+            if(tribunalCases.length === 0) {
+                list.innerHTML = "<p style='text-align:center; font-size:0.85rem; color:#888;'>Aucune affaire en cours au Tribunal !</p>";
+                return;
+            }
+
+            for(var i = 0; i < tribunalCases.length; i++) {
+                var c = tribunalCases[i];
+                var totalVotes = c.guiltyVotes + c.innocentVotes;
+                var guiltyPct = totalVotes > 0 ? Math.round((c.guiltyVotes / totalVotes) * 100) : 0;
+                var innocentPct = totalVotes > 0 ? Math.round((c.innocentVotes / totalVotes) * 100) : 0;
+
+                var userHasVoted = (currentActiveUser && c.voters.indexOf(currentActiveUser) !== -1);
+
+                var voteBtnHTML = "";
+                if(!userHasVoted) {
+                    voteBtnHTML = '<div class="validation-btn-group" style="margin-top:15px;">' +
+                        '<button class="btn-fail" onclick="voteTribunal(' + c.id + ', \'guilty\')">🔴 Inacceptable / Coupable</button>' +
+                        '<button class="btn-validate" onclick="voteTribunal(' + c.id + ', \'innocent\')">🟢 Acceptable / Non Coupable</button>' +
+                    '</div>';
+                } else {
+                    voteBtnHTML = '<div style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:#8b4513; margin-top:10px; text-align:center;">' +
+                        '✅ Tu as voté sur cette affaire !' +
+                    '</div>';
+                }
+
+                var commentsHTML = "";
+                var cmts = c.comments || [];
+                for(var j = 0; j < cmts.length; j++) {
+                    commentsHTML += '<div class="comment-item">' +
+                        '<strong>' + cmts[j].author + ' :</strong> ' + cmts[j].text +
+                    '</div>';
+                }
+
+                var adminDelBtn = isAdmin ? '<button class="admin-delete-btn" onclick="adminDeleteTribunal(' + i + ')">🗑️</button>' : '';
+
+                list.innerHTML += '<div class="tribunal-case-card">' +
+                    '<span class="tribunal-badge">⚖️ Procès #' + (tribunalCases.length - i) + ' ' + adminDelBtn + '</span>' +
+                    '<div class="tribunal-question">"' + c.question + '"</div>' +
+
+                    '<div class="vote-bar-container">' +
+                        '<div class="vote-guilty-bar" style="width:' + guiltyPct + '%;"></div>' +
+                        '<div class="vote-innocent-bar" style="width:' + innocentPct + '%;"></div>' +
+                    '</div>' +
+
+                    '<div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800; text-transform:uppercase;">' +
+                        '<span style="color:var(--red);">Coupable / Inacceptable : ' + guiltyPct + '% (' + c.guiltyVotes + ')</span>' +
+                        '<span style="color:var(--green);">Non Coupable / Acceptable : ' + innocentPct + '% (' + c.innocentVotes + ')</span>' +
+                    '</div>' +
+
+                    voteBtnHTML +
+
+                    '<div class="comments-section">' +
+                        '<p style="font-size:0.75rem; font-weight:800; text-transform:uppercase; margin-bottom:8px; color:var(--espresso);">💬 Feed-backs & Verdicts du Jury :</p>' +
+                        '<div>' + (commentsHTML || "<span style='font-size:0.75rem; color:#888; font-style:italic;'>Aucun avis pour l'instant...</span>") + '</div>' +
+                        
+                        '<div style="display:flex; gap:8px; margin-top:10px;">' +
+                            '<input type="text" id="cmt_input_' + c.id + '" class="form-control" placeholder="Justifier mon vote / Donner un avis..." style="font-size:0.78rem;">' +
+                            '<button onclick="addTribunalComment(' + c.id + ')" class="capsule-btn" style="padding:6px 12px; font-size:0.7rem; background:var(--espresso); color:var(--peony); flex-shrink:0;">Publier</button>' +
+                        '</div>' +
+                    '</div>' +
+
+                '</div>';
+            }
+        }
+
+        function adminDeleteTribunal(idx) {
+            if(confirm("Supprimer ce procès ?")) {
+                tribunalCases.splice(idx, 1);
+                saveAndRefresh();
+            }
+        }
+
+        function voteTribunal(caseId, voteType) {
+            if(!currentActiveUser) return alert("Connecte-toi avec ton pseudo pour voter !");
+
+            for(var i = 0; i < tribunalCases.length; i++) {
+                if(tribunalCases[i].id === caseId) {
+                    if(tribunalCases[i].voters.indexOf(currentActiveUser) !== -1) {
+                        return alert("Tu as déjà voté sur cette affaire !");
+                    }
+
+                    if(voteType === 'guilty') tribunalCases[i].guiltyVotes++;
+                    else tribunalCases[i].innocentVotes++;
+
+                    tribunalCases[i].voters.push(currentActiveUser);
+                    break;
+                }
+            }
+
+            saveAndRefresh();
+            renderTribunalCases();
+        }
+
+        function addTribunalComment(caseId) {
+            var input = document.getElementById('cmt_input_' + caseId);
+            if(!input) return;
+            var txt = input.value.trim();
+            if(!txt) return alert("Écris ton avis !");
+
+            var authorName = currentActiveUser || "Anonyme Diva";
+
+            for(var i = 0; i < tribunalCases.length; i++) {
+                if(tribunalCases[i].id === caseId) {
+                    if(!tribunalCases[i].comments) tribunalCases[i].comments = [];
+                    tribunalCases[i].comments.push({ author: authorName, text: txt });
+                    break;
+                }
+            }
+
+            saveAndRefresh();
+            renderTribunalCases();
+        }
+
+        /* FONCTIONS BLIND TEST GC */
+        function loadBlindTestQuestion() {
+            questionAnswered = false;
+            document.getElementById('feedbackBox').classList.add('hidden');
+            document.getElementById('nextQuestionBtn').classList.add('hidden');
+
+            if(currentQuestionIdx >= blindTestQuotes.length) {
+                document.getElementById('quizBox').classList.add('hidden');
+                document.getElementById('quizEndBox').classList.remove('hidden');
+                document.getElementById('finalScoreDisplay').innerText = userScore;
+                document.getElementById('maxScoreDisplay').innerText = blindTestQuotes.length;
+
+                var ratio = userScore / blindTestQuotes.length;
+                var msg = "";
+                if(ratio === 1) msg = "👑 Tu es la reine incontestée des archives du GC ! Un sans-faute parfait !";
+                else if(ratio >= 0.6) msg = "✨ Très beau score ! Tu connais super bien tes copines !";
+                else msg = "😭 Oulà ! Un petit rafraîchissement de mémoire s'impose dans les récap du GC !";
+                document.getElementById('finalFeedbackMsg').innerText = msg;
+                return;
+            }
+
+            document.getElementById('quizBox').classList.remove('hidden');
+            document.getElementById('quizEndBox').classList.add('hidden');
+
+            var q = blindTestQuotes[currentQuestionIdx];
+            document.getElementById('questionProgress').innerText = "Question " + (currentQuestionIdx + 1) + "/" + blindTestQuotes.length;
+            document.getElementById('currentScoreDisplay').innerText = userScore;
+            document.getElementById('quoteTextDisplay').innerText = '"' + q.text + '"';
+
+            var container = document.getElementById('optionsGridContainer');
+            container.innerHTML = "";
+
+            for(var i = 0; i < q.choices.length; i++) {
+                var nameChoice = q.choices[i];
+                container.innerHTML += '<button class="option-choice-btn" onclick="checkAnswer(\'' + nameChoice + '\')">' + nameChoice + '</button>';
+            }
+        }
+
+        function checkAnswer(selectedName) {
+            if(questionAnswered) return;
+            questionAnswered = true;
+
+            var q = blindTestQuotes[currentQuestionIdx];
+            var feedback = document.getElementById('feedbackBox');
+            feedback.classList.remove('hidden');
+
+            if(selectedName.toLowerCase() === q.author.toLowerCase()) {
+                userScore++;
+                document.getElementById('currentScoreDisplay').innerText = userScore;
+                feedback.className = "result-feedback correct";
+                feedback.innerText = "🟢 BINGO ! C'est bien " + q.author + " qui a dit ça !";
+            } else {
+                feedback.className = "result-feedback wrong";
+                feedback.innerText = "🔴 RATÉ ! La réponse exacte était : " + q.author + " !";
+            }
+
+            document.getElementById('nextQuestionBtn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            loadBlindTestQuestion();
+        }
+
+        function restartQuiz() {
+            currentQuestionIdx = 0;
+            userScore = 0;
+            loadBlindTestQuestion();
+        }
+
+        function submitNewQuote() {
+            var txt = document.getElementById('newQuoteInput').value.trim();
+            var author = document.getElementById('newAuthorInput').value.trim();
+
+            if(!txt || !author) return alert("Remplis la phrase et le prénom !");
+
+            var choices = [author, "Chloé", "Sara", "Noure"];
+            blindTestQuotes.push({ text: txt, author: author, choices: choices });
+            
+            document.getElementById('newQuoteInput').value = "";
+            document.getElementById('newAuthorInput').value = "";
+
+            saveAndRefresh();
+            alert("Archive ajoutée avec succès au Blind Test du GC !");
+        }
+
+        /* FONCTIONS MISSIONS */
+        function renderMissionUI() {
+            autoSetMissionPhaseByDay();
+
+            for(var s = 1; s <= 3; s++) {
+                var el = document.getElementById('step' + s);
+                if(el) el.classList.remove('active');
+            }
+            var currentStepEl = document.getElementById('step' + missionState.currentPhase);
+            if(currentStepEl) currentStepEl.classList.add('active');
+
+            document.getElementById('phase1Box').classList.add('hidden');
+            document.getElementById('phase2Box').classList.add('hidden');
+            document.getElementById('phase3Box').classList.add('hidden');
+
+            if(missionState.currentPhase === 1) {
+                document.getElementById('phase1Box').classList.remove('hidden');
+                renderProposalsBank();
+            } else if(missionState.currentPhase === 2) {
+                document.getElementById('phase2Box').classList.remove('hidden');
+            } else if(missionState.currentPhase === 3) {
+                document.getElementById('phase3Box').classList.remove('hidden');
+                renderAllMissionsAssignments();
+                updateTimer();
+            }
+        }
+
+        function submitMissionProposal() {
+            var input = document.getElementById('missionInput');
+            var txt = input.value.trim();
+            if(!txt) return alert("Écris une idée de mission !");
+            
+            if(!Array.isArray(missionState.proposalsBank)) {
+                missionState.proposalsBank = [];
+            }
+            
+            missionState.proposalsBank.push(txt);
+            input.value = "";
+            saveAndRefresh();
+        }
+
+        function renderProposalsBank() {
+            var bank = missionState.proposalsBank || [];
+            document.getElementById('totalProposalsCount').innerText = bank.length;
+            var list = document.getElementById('proposalsListDisplay');
+            list.innerHTML = "";
+            if(bank.length === 0) {
+                list.innerHTML = "<span style='color:rgba(62,39,35,0.5);'>Aucune mission ajoutée pour le moment.</span>";
+                return;
+            }
+            for(var i = 0; i < bank.length; i++) {
+                list.innerHTML += '<div style="padding:6px 8px; margin-bottom:4px; background:rgba(255,255,255,0.6); border-radius:8px; border:1px solid rgba(62,39,35,0.15);">• ' + bank[i] + '</div>';
+            }
+        }
+
+        function launchRandomDistribution() {
+            if(!missionState.proposalsBank || missionState.proposalsBank.length === 0) {
+                return alert("Ajoute au moins une mission dans la banque du lundi !");
+            }
+            
+            missionState.assignments = {};
+            for(var m = 0; m < membersData.length; m++) {
+                var name = membersData[m].name;
+                var randIdx = Math.floor(Math.random() * missionState.proposalsBank.length);
+                var pickedMission = missionState.proposalsBank[randIdx];
+
+                missionState.assignments[name] = {
+                    mission: pickedMission,
+                    proof: null,
+                    validVotes: 0,
+                    failVotes: 0
+                };
+            }
+
+            missionState.currentPhase = 3;
+            saveAndRefresh();
+            alert("Missions distribuées à toutes les membres du GC !");
+        }
+
+        function renderAllMissionsAssignments() {
+            var list = document.getElementById('allMembersMissionsList');
+            list.innerHTML = "";
+
+            if(membersData.length === 0) {
+                list.innerHTML = "<p style='text-align:center;'>Aucun membre en cours.</p>";
+                return;
+            }
+
+            for(var m = 0; m < membersData.length; m++) {
+                var name = membersData[m].name;
+                var assign = (missionState.assignments && missionState.assignments[name]) 
+                    ? missionState.assignments[name] 
+                    : { mission: "Défi confidentiel", proof: null, validVotes: 0, failVotes: 0 };
+                
+                var proofHTML = "";
+                if(assign.proof) {
+                    proofHTML = '<div style="margin-top:10px;">' +
+                        '<img src="' + assign.proof + '" style="max-width:100%; max-height:180px; border-radius:10px; border:2px solid var(--espresso);"><br>' +
+                        '<div class="validation-btn-group">' +
+                            '<button class="btn-validate" onclick="voteOnMemberProof(\'' + name + '\', \'valid\')">Validé 🟢 (' + assign.validVotes + ')</button>' +
+                            '<button class="btn-fail" onclick="voteOnMemberProof(\'' + name + '\', \'fail\')">Échec 🔴 (' + assign.failVotes + ')</button>' +
+                        '</div>' +
+                    '</div>';
+                } else {
+                    proofHTML = '<div style="margin-top:10px; font-size:0.75rem; color:#8b4513; font-style:italic;">En attente de la preuve photo de l\'agent...</div>';
+                    if(currentActiveUser.toLowerCase() === name.toLowerCase()) {
+                        proofHTML += '<div style="margin-top:8px;">' +
+                            '<input type="file" id="file_' + name + '" accept="image/*" class="form-control" style="font-size:0.75rem; margin-bottom:5px;">' +
+                            '<button onclick="uploadMyProof(\'' + name + '\')" class="capsule-btn" style="width:100%; font-size:0.7rem; background:var(--espresso); color:var(--peony);">Déposer ma preuve 📸</button>' +
+                        '</div>';
+                    }
+                }
+
+                list.innerHTML += '<div class="member-mission-card">' +
+                    '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">' +
+                        '<strong style="font-size:0.95rem; text-transform:uppercase;">' + name + '</strong>' +
+                        '<span style="font-size:0.65rem; background:var(--espresso); color:var(--peony); padding:2px 8px; border-radius:8px;">AGENT</span>' +
+                    '</div>' +
+                    '<div style="font-size:0.85rem; font-style:italic;"><strong>Mission :</strong> ' + assign.mission + '</div>' +
+                    proofHTML +
+                '</div>';
+            }
+        }
+
+        function uploadMyProof(memberName) {
+            var fileIn = document.getElementById('file_' + memberName);
+            if(fileIn && fileIn.files && fileIn.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    if(!missionState.assignments) missionState.assignments = {};
+                    if(!missionState.assignments[memberName]) {
+                        missionState.assignments[memberName] = { mission: "Défi confidentiel", proof: null, validVotes: 0, failVotes: 0 };
+                    }
+                    missionState.assignments[memberName].proof = e.target.result;
+                    saveAndRefresh();
+                    alert("Ta preuve a été publiée ! Le GC peut maintenant la valider.");
+                };
+                reader.readAsDataURL(fileIn.files[0]);
+            } else {
+                alert("Choisis une photo !");
+            }
+        }
+
+        function voteOnMemberProof(memberName, type) {
+            if(!missionState.assignments || !missionState.assignments[memberName]) return;
+
+            if(type === 'valid') {
+                missionState.assignments[memberName].validVotes++;
+            } else {
+                missionState.assignments[memberName].failVotes++;
+            }
+
+            for(var i = 0; i < membersData.length; i++) {
+                if(membersData[i].name === memberName) {
+                    if(type === 'valid') {
+                        membersData[i].wins = (membersData[i].wins || 0) + 1;
+                    } else {
+                        membersData[i].fails = (membersData[i].fails || 0) + 1;
+                    }
+                    break;
+                }
+            }
+            saveAndRefresh();
+        }
+
+        function selectAvatar(url, element) {
+            selectedAvatarPath = url;
+            var items = document.querySelectorAll('.gallery-item');
+            for(var n = 0; n < items.length; n++) {
+                items[n].classList.remove('selected');
+            }
+            element.classList.add('selected');
+        }
+
+        function saveMemberProfile() {
+            var name = document.getElementById('studioName').value.trim();
+            var birthday = document.getElementById('studioBirthday').value || "Non précisé";
+            var age = document.getElementById('studioAge').value || "-";
+            var zodiac = document.getElementById('studioZodiac').value || "-";
+            var status = document.getElementById('studioStatus').value || "Femme Fatale";
+
+            if(!name) return alert("S'il te plaît, entre ton pseudo !");
+
+            var formattedName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
+            var existingIndex = -1;
+            for(var p = 0; p < membersData.length; p++) {
+                if(membersData[p].name.toLowerCase() === formattedName.toLowerCase()) {
+                    existingIndex = p;
+                    break;
+                }
+            }
+
+            if(existingIndex !== -1) {
+                membersData[existingIndex].birthday = birthday;
+                membersData[existingIndex].age = age;
+                membersData[existingIndex].zodiac = zodiac;
+                membersData[existingIndex].status = status;
+                membersData[existingIndex].avatar = selectedAvatarPath;
+                membersData[existingIndex].online = true;
+            } else {
+                membersData.push({ name: formattedName, birthday: birthday, age: age, zodiac: zodiac, status: status, avatar: selectedAvatarPath, online: true, wins: 0, fails: 0 });
+            }
+
+            currentActiveUser = formattedName;
+            unlockSiteNavigation();
+            saveAndRefresh();
+            switchTab('passes');
+            alert("Bienvenue " + formattedName + " ! Ta fiche est enregistrée et l'accès au site est débloqué 🐆.");
+        }
+
+        function switchTab(tabName) {
+            if(!userLoggedIn && tabName !== 'studio') {
+                return alert("S'il te plaît, enregistre ton avatar ou connecte-toi d'abord pour accéder au reste du site !");
+            }
+
+            document.getElementById('btnPasses').classList.remove('active');
+            document.getElementById('btnStudio').classList.remove('active');
+            document.getElementById('btnMission').classList.remove('active');
+            document.getElementById('btnBlindTest').classList.remove('active');
+            document.getElementById('btnHearts').classList.remove('active');
+            document.getElementById('btnGossip').classList.remove('active');
+            document.getElementById('btnVibe').classList.remove('active');
+            document.getElementById('btnTribunal').classList.remove('active');
+
+            document.getElementById('passesSection').classList.add('hidden');
+            document.getElementById('studioSection').classList.add('hidden');
+            document.getElementById('missionSection').classList.add('hidden');
+            document.getElementById('blindtestSection').classList.add('hidden');
+            document.getElementById('heartsSection').classList.add('hidden');
+            document.getElementById('gossipSection').classList.add('hidden');
+            document.getElementById('vibeSection').classList.add('hidden');
+            document.getElementById('tribunalSection').classList.add('hidden');
+
+            if(tabName === 'passes') {
+                document.getElementById('btnPasses').classList.add('active');
+                document.getElementById('passesSection').classList.remove('hidden');
+            }
+            if(tabName === 'studio') {
+                document.getElementById('btnStudio').classList.add('active');
+                document.getElementById('studioSection').classList.remove('hidden');
+            }
+            if(tabName === 'mission') {
+                document.getElementById('btnMission').classList.add('active');
+                document.getElementById('missionSection').classList.remove('hidden');
+            }
+            if(tabName === 'blindtest') {
+                document.getElementById('btnBlindTest').classList.add('active');
+                document.getElementById('blindtestSection').classList.remove('hidden');
+                loadBlindTestQuestion();
+            }
+            if(tabName === 'hearts') {
+                document.getElementById('btnHearts').classList.add('active');
+                document.getElementById('heartsSection').classList.remove('hidden');
+                renderHeartsUI();
+            }
+            if(tabName === 'gossip') {
+                document.getElementById('btnGossip').classList.add('active');
+                document.getElementById('gossipSection').classList.remove('hidden');
+                renderGossipWall();
+            }
+            if(tabName === 'vibe') {
+                document.getElementById('btnVibe').classList.add('active');
+                document.getElementById('vibeSection').classList.remove('hidden');
+                renderPlaylist();
+            }
+            if(tabName === 'tribunal') {
+                document.getElementById('btnTribunal').classList.add('active');
+                document.getElementById('tribunalSection').classList.remove('hidden');
+                hasUnreadTribunal = false;
+                saveAndRefresh();
+                renderTribunalCases();
+            }
+        }
+
+        window.onload = function() {
+            buildGallery();
+            renderSidebar();
+            renderPasses();
+            renderMissionUI();
+            checkNotificationBadges();
+            updateTimer();
+        };
+    </script>
+</body>
+</html>
